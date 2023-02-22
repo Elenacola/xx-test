@@ -1,0 +1,47 @@
+
+CREATE PROC Sp_InsArticolo
+
+@CodArt varchar(20),
+@Descrizione varchar(60),
+@Um char(4),
+@CodStat varchar(20),
+@PzCart smallint,
+@PesoNetto float,
+@IdIva int,
+@IdStatoArt char(2),
+@IdFamAss int
+
+AS
+
+IF NOT EXISTS (SELECT [CODART] FROM [dbo].[ARTICOLI] WHERE CODART = @CodArt)
+BEGIN
+	INSERT INTO [dbo].[ARTICOLI]
+	VALUES
+	(
+		@CodArt,
+		@Descrizione,
+		@Um,
+		@CodStat,
+		@PzCart,
+		@PesoNetto,
+		@IdIva,
+		@IdStatoArt,
+		GETDATE(),
+		@IdFamAss
+	);
+END
+ELSE
+BEGIN
+	UPDATE [dbo].[ARTICOLI]
+	SET
+		DESCRIZIONE = @Descrizione,
+		UM = @Um,
+		CODSTAT = @CodStat,
+		PZCART = @PzCart,
+		PESONETTO = @PesoNetto,
+		IDIVA = @IdIva,
+		IDSTATOART = @IdStatoArt,
+		IDFAMASS = @IdFamAss
+	WHERE 
+		[CODART] = @CodArt;
+END
