@@ -16,7 +16,11 @@ i file sono disponibili nei vari menu Branch :
 il docente ha sviluppato un corso pratico essendo nell'ICT da circa 20 anni: 
 Corso pratico completo per creare query, progettare database relazionali ed eseguire Data Analisys con Tableau e Python
 
-tutti i codici sono corredati di una spiegazione dettagliata e scelte motivate di alte performance
+-tutti i codici sono corredati di una spiegazione dettagliata e scelte motivate di alte performance.
+
+I vari step seguono l'intero iter del processo DB: 
+![image](https://user-images.githubusercontent.com/79009772/220663430-fe11e330-c37f-4b9e-a7d6-cb2eb4baa818.png)
+
 
 
 
