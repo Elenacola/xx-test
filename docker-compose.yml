@@ -1,0 +1,38 @@
+#https://docs.docker.com/compose/compose-file/compose-versioning/
+version: '3.5'
+
+networks: 
+  ntmysql:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/24
+
+volumes:
+  mysql-volume:
+
+services:
+  ### Contenitore MySql
+  mysql:
+    image: mysql:latest
+    restart: unless-stopped
+    container_name: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    volumes: 
+      - mysql-volume:/var/lib/mysql
+    networks: 
+      ntmysql:
+        ipv4_address: 172.20.0.2
+    ports:
+      - target: 3306
+        published: 3306 #Porta in uso nell'host
+        protocol: tcp
+        mode: host
+    environment:
+      MYSQL_ROOT_PASSWORD: 'SimS@l@Bin21' #Password root
+      MYSQL_DATABASE: 'Alphashop' #Database 
+      MYSQL_USER: 'Nicola' #Utente 
+      MYSQL_PASSWORD: '123_Stella' #Password utente
+      MYSQL_ROOT_HOST: '%'  #
+
