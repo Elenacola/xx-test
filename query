@@ -1,0 +1,91 @@
+/**********************************
+Join tra tabelle
+**********************************/
+/*Riportare per ogni carta di credito il suo numero, il suo saldo,
+il nome e il cognome del relativo cliente. */
+SELECT Cc.NumeroCarta,
+       Cc.Saldo,   
+       Cl.Nome,  
+       Cl.Cognome
+FROM   CarteCredito AS Cc
+INNER JOIN Clienti AS Cl
+   ON Cc.CodiceFiscale =  Cl.CodiceFiscale;
+
+
+/*Riportare per ogni conto corrente il suo numero, il suo saldo, 
+il codice fiscale e la residenza dei clienti.*/
+SELECT Cc.NumeroConto,
+       Cc.Saldo, 
+       Cl.CodiceFiscale,
+       Cl.Residenza
+FROM   ContiCorrenti AS Cc
+INNER JOIN ClientiContiCorrenti AS Associazione
+  ON Cc. NumeroConto = Associazione.NumeroConto
+INNER JOIN Clienti AS Cl
+ON Associazione.CodiceFiscale = Cl.CodiceFiscale;
+
+
+/**********************************
+Group by e Having
+***********************************/
+/* Quanti conti correnti sono presenti?
+Qual è la somma dei saldi dei conti correnti?
+Qual è la media dei saldi delle carte di credito?  */
+***********************************/
+
+SELECT COUNT(*) AS NumeroConti
+FROM   ContiCorrenti;
+
+SELECT SUM(Saldo) AS SommaSaldoConti 
+FROM   ContiCorrenti;
+
+SELECT AVG(Saldo) AS MediaSaldoConti
+FROM   CarteCredito;
+
+
+/*Calcolare la somma dei saldi dei conti correnti aperti dal
+primo gennaio 2019 e con valuta Euro */
+SELECT SUM(Saldo)
+FROM   ContiCorrenti
+WHERE  DataApertura >= '2019-01-01'     
+  AND Valuta = 'EUR';
+
+
+/*Riportare il numero di conti correnti per ogni valuta. */
+SELECT   Valuta,
+	     COUNT(*) AS NumeroConti
+FROM     ContiCorrenti
+GROUP BY Valuta;
+
+
+/*Riportare la somma dei saldi delle carte di 
+credito divise per Tipologia e Valuta.*/
+SELECT   Tipologia,
+         Valuta,
+         SUM(Saldo) AS SommaSaldo
+FROM     CarteCredito
+GROUP BY Tipologia,
+         Valuta;
+
+
+/*Riportare la somma dei saldi delle carte di credito
+divise per Tipologia e valuta, se tale somma è superiore a 50.*/
+SELECT   Tipologia,
+         Valuta,
+         SUM(Saldo) AS SommaSaldo
+FROM     CarteCredito
+GROUP BY Tipologia,
+         Valuta 
+HAVING   SUM(Saldo) > 50;
+
+
+/*Riportare il numero di conti correnti aperti dopo il primo  
+gennaio 2019, divisi per valuta, se la media dei saldi è superiore a 100.*/
+SELECT   Valuta,
+	     COUNT(*) AS NumeroConti
+FROM     ContiCorrenti
+WHERE    DataApertura >= '20190101'
+GROUP BY Valuta
+HAVING   AVG(saldo) > 100;
+
+ 
