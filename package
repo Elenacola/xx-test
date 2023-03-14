@@ -1,13 +1,9 @@
 set serveroutput on;
-
 --creazione pacchetto--
-
 create or replace package prodotti as 
 procedure caratteristiche(v_codice prodotti.codice%type);
 end prodotti;
-
 --creazione body--
-
 create or replace package prodotti as 
 procedure caratteristiche(v_codice prodotti.codice%type) is
 v_prodotto prodotti.nome%type;
@@ -16,9 +12,26 @@ begin
 
  select nome, prezzo into v_prodotto, v_prezzo
  from prodotti 
-   where codice =v_codice;
+ where codice =v_codice;
  dmms_output.put_line ('Articolo ' || v_prodotto);
  dmms_output.put_line ('Prezzo ' || v_prezzo);
-  end caratteristica;
+ end caratteristica;
  
- end prodotti;
+ ---------------------------------------------------
+ inserire funzioni---dopo averle create nel package--
+ ------funzione f_prezzo nel body----
+ 
+function f_prezzo(v_prezzo int)
+ return number
+ as
+  v_prezzo number; 
+  begin
+   select prezzo into v_prezzo
+   from 
+   prodotti where codice - v_codice;
+   return v_prezzo;
+  end f_prezzo;
+ ------------------------------------------
+ chiudere il pacchetto
+ -------------------------------------------
+  end prodotti;
