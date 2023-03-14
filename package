@@ -1,0 +1,24 @@
+set serveroutput on;
+
+--creazione pacchetto--
+
+create or replace package prodotti as 
+procedure caratteristiche(v_codice prodotti.codice%type);
+end prodotti;
+
+--creazione body--
+
+create or replace package prodotti as 
+procedure caratteristiche(v_codice prodotti.codice%type) is
+v_prodotto prodotti.nome%type;
+v_prezzo prodotti.prezzo%type;
+begin
+
+ select nome, prezzo into v_prodotto, v_prezzo
+ from prodotti 
+   where codice =v_codice;
+ dmms_output.put_line ('Articolo ' || v_prodotto);
+ dmms_output.put_line ('Prezzo ' || v_prezzo);
+  end caratteristica;
+ 
+ end prodotti;
