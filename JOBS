@@ -1,0 +1,27 @@
+begin
+sys.dbms_scheduler.create_job(
+job_name =>'job_uno',
+job_type0>'PLSQL_BLOCK'
+job_action =>'declare
+ v_contatore number :=0;
+ 
+ begin
+   select count (*) into v_contatore
+   from
+   log_tabella;
+   insert into tabella_log values(v_contatore + 1 , sysdate);
+   commit;
+   end';
+ start_date =>systimestamp
+ repeat_interval =>'freq=secondly; interval=5'
+ end_date=>null
+ 
+ --abilito jobs--
+ 
+ enbled=>true
+ comments=>'log attività');
+ 
+ end;
+ ----
+ 
+ (a monte c'è la creazione della tabella di log con id e data)
