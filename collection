@@ -1,0 +1,32 @@
+-----------------------------
+LE COLLEZIONI - come si accede ad un array ?
+------------------------------
+SET SERVEROUTPUT ON
+
+DECLARE
+ TYPE ARTICOLIT IS TABLE OF ARTICOLI.ART_NOME%TYPE
+ INDEX BY PLS_INTEGER;
+ 
+ ART_V ARTICOLIT;
+ 
+ 
+ TYPE IMPIEGATI IS TABLE OF IMPIEGATI%ROWTYPE --(Tutta la tabella)--
+ index by pls_integer;
+ 
+ imp_v IMPIEGATI;
+ 
+--------------------
+introduco dati do il valore agli indici degli array di tipo associativo
+--------------------
+begin 
+
+  art_v(1) :='CocaCola';
+  art_v(2) :='Fanta';
+  art_v(30) :='altro';
+  art_v(-10) :='NA';
+  
+  dbms_output.put_line(art_v(2));
+  
+end;
+
+  
