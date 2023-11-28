@@ -1,0 +1,101 @@
+--------------------------------------------------------
+ DDL for Procedure PRG_REPORT_ANALISI_CONTRATTI
+--------------------------------------------------------
+set define off;
+
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "STAGEOWNER"."PRG_REPORT_ANALISI_CONTRATTI" AS 
+BEGIN
+
+UPDATE PRG_EXP_REPORT_CONTRATTI
+SET ANNO ='2021'
+where ANNO ='FY21';
+
+UPDATE PRG_EXP_REPORT_CONTRATTI
+SET ANNO ='2022'
+where ANNO ='FY22';
+
+UPDATE PRG_EXP_REPORT_CONTRATTI
+SET MD = 'Fabbisogno da DEFFAB'
+where MD = 'VALORE_IE';
+
+UPDATE PRG_EXP_REPORT_CONTRATTI
+SET MD = 'Valore Proposto come Residuo da Contratto (è)'
+where MD = 'VAL_PROP_TOT' AND PRODOTTO != 'NoCat';
+
+UPDATE PRG_EXP_REPORT_CONTRATTI
+SET MD = 'Valore Proposto come Residuo da Contratto Totale (è)'
+where MD = 'VAL_PROP_TOT' AND PRODOTTO = 'NoCat';
+
+insert into PRG_EXP_REPORT_CONTRATTI ( CDR,CONTRATTO,PRODOTTO, ANNO, MD, VAL)
+ select  DISTINCT CDR, 'NoContr', PRODOTTO, ANNO, 'Totale copertura da contratti',
+         sum(VAL) over(partition by  PRODOTTO, ANNO, CDR) 
+From PRG_EXP_REPORT_CONTRATTI
+WHERE PRODOTTO != 'NoCat'
+and contratto != 'NoContr'
+and md != 'Fabbisogno da DEFFAB';
+
+insert into PRG_EXP_REPORT_CONTRATTI ( CDR,CONTRATTO,PRODOTTO, ANNO, MD, VAL)
+ select  DISTINCT A.CDR, 'NoContr', A.PRODOTTO, A.ANNO, 'Residuo', 
+         A.VAL-B.VAL 
+From PRG_EXP_REPORT_CONTRATTI A, PRG_EXP_REPORT_CONTRATTI B
+WHERE A.PRODOTTO = B.PRODOTTO
+AND A.CDR = B.CDR
+AND A.ANNO = B.ANNO
+and A.md = 'Fabbisogno da DEFFAB'
+and B.md = 'Totale copertura da contratti';
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure PRG_INSERT_SICUREZZE_CONTRATTI
+--------------------------------------------------------
+set define off;
+
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "STAGEOWNER"."PRG_INSERT_SICUREZZE_CONTRATTI" AS 
+BEGIN
+
+EXECUTE IMMEDIATE ('truncate table PRG_SICUREZZA_CONTRATTI');
+
+INSERT INTO PRG_SICUREZZA_CONTRATTI
+select DISTINCT 'GA'||SUBSTR(CODICE_SEDE, 2), NUMERO_DOCUMENTO, 'WRITE', 'MEMBER', 'SL_DIMENSION', 'SL_GROUP' from prg_contratti_attivi;
+
+UPDATE PRG_SICUREZZA_CONTRATTI
+SET NOME_UTENTE ='GA1100T'
+where NOME_UTENTE ='GA11000';
+
+--------------------------------------------------------
+--  DDL for Procedure PRG_AGG_CONTRATTI_ATTIVI
+--------------------------------------------------------
+set define off;
+
+  CREATE OR REPLACE EDITIONABLE PROCEDURE "STAGEOWNER"."PRG_AGG_CONTRATTI_ATTIVI" AS
+
+ BEGIN
+
+update PRG_CONTRATTI_ATTIVI set codice_sede = 'C'||codice_sede;
+
+update PRG_CONTRATTI_ATTIVI set numero_documento = 'C'||numero_documento; 
+--il codice contratto è stato modificato per evitare problemi sull'applicazione
+
+update PRG_CONTRATTI_ATTIVI set descrizione_documento = substr (numero_documento ||' - '||descrizione_documento, 1, 79);    
+--all'alias viene concatenato il codice 
+--contratto per evitare descrizioni duplicate 
+
+update PRG_CONTRATTI_ATTIVI set residuo_linea = nvl(importo_linea,0)-nvl(ricevuto_linea_approvato,0);  
+--si è scelto di utilizzare l'importo linea piuttosto che il prodotto, DCA deve confermare
+
+
+
+update PRG_CONTRATTI_ATTIVI set mesi_res_a_data =  ( CASE  
+--dei nuovi contratti, solo quelli del cdr 73000 hanno data scadenza documento valorizzata, fa comunque fede la data_fine_validita_documento
+ /*                                                           WHEN data_scadenza_documento is not null and codice_sede <> 'C73000'  
+                                                            THEN   Round(MONTHS_BETWEEN(data_scadenza_documento,data_estrazione), 0)  --contratti vecchi
+                                                            WHEN data_scadenza_documento is not null and codice_sede =  'C73000'  
+                                                            THEN   Round(MONTHS_BETWEEN(data_fine_validita_documento,data_estrazione), 0) --contratti nuovi della 73000
+                                                            WHEN data_scadenza_documento is null                                  
+                                                            THEN   Round(MONTHS_BETWEEN(data_fine_validita_documento,data_estrazione), 0) --tutti gli altri contratti nuovi
+                                                            ELSE null
+                                                           END );
+*/
+
+            
