@@ -1,0 +1,38 @@
+--Esempio uso ciclo WHILE
+
+DECLARE
+V_CodFid CLIENTI.CODFIDELITY%TYPE := &CodFid;
+V_NumSpese BINARY_INTEGER :=  0;
+V_Contatore BINARY_INTEGER := 0;
+V_Bonus number := 0;
+
+BEGIN
+
+SELECT COUNT(*) INTO V_NumSpese FROM SCONTRINI
+WHERE CODFID = V_CodFid;
+
+V_Contatore := V_NumSpese - 15;
+
+ --Espressioni While
+WHILE V_Contatore > 0
+    LOOP
+        DBMS_OUTPUT.PUT_LINE ('Creato Bonus ' || V_Contatore);
+        V_Contatore := V_Contatore - 1;
+        V_Bonus := V_Bonus + 100;
+        
+        IF V_Bonus > 500
+        THEN
+            DBMS_OUTPUT.PUT_LINE ('Bonus Massimo Raggiunto!');
+            EXIT;
+        END IF;
+         
+    END LOOP;
+    
+DBMS_OUTPUT.PUT_LINE ('Fatto!'); 
+    
+EXCEPTION 
+WHEN OTHERS THEN
+    null;
+END;
+
+ 
