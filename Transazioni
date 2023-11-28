@@ -1,0 +1,61 @@
+-- Gestione delle Transazioni
+
+DECLARE
+--Dichiariamo delle variabili esterne
+P_CodFid CLIENTI.CODFIDELITY%TYPE;
+P_Nome CLIENTI.NOME%TYPE;
+P_Cognome CLIENTI.COGNOME%TYPE;
+P_Bollini SCONTRINI.BOLLINI%TYPE := 0;
+
+BEGIN
+
+SELECT MAX(CODFIDELITY) + 1 INTO P_CodFid
+FROM CLIENTI;
+
+dbms_output.put_line('la variabile P_CodFid è: ' || P_CodFid);
+
+P_Nome := 'Pippo';
+P_Cognome := 'Franco';
+
+INSERT INTO CLIENTI(CODFIDELITY,NOME,COGNOME,STATO,DATACREAZ)
+VALUES(P_CodFid,P_Nome,P_Cognome,'Attivo',SYSDATE);
+
+SAVEPOINT A;
+
+P_Bollini := 50;
+
+INSERT INTO CARDS(CODFIDELITY,BOLLINI,ULTIMASPESA,OBSOLETO)
+VALUES(P_CodFid,P_Bollini,SYSDATE,'No');
+
+SAVEPOINT B;
+
+COMMIT;
+
+SELECT MAX(CODFIDELITY) + 1 INTO P_CodFid
+FROM CLIENTI;
+
+dbms_output.put_line('la variabile P_CodFid è: ' || P_CodFid);
+
+P_Nome := 'Alb';
+P_Cognome := 'Sile';
+
+INSERT INTO CLIENTI(CODFIDELITY,NOME,COGNOME,STATO,DATACREAZ)
+VALUES(P_CodFid,P_Nome,P_Cognome,'Attivo',SYSDATE);
+
+SAVEPOINT C;
+
+P_Bollini := 80;
+
+INSERT INTO CARDS(CODFIDELITY,BOLLINI,ULTIMASPESA,OBSOLETO)
+VALUES(P_CodFid,P_Bollini,SYSDATE,'No');
+
+SAVEPOINT D;
+
+ROLLBACK TO C;
+
+COMMIT;
+
+EXCEPTION 
+WHEN OTHERS THEN
+    null;
+END;
