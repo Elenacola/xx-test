@@ -1,0 +1,32 @@
+--Esempio di Espressioni condizionali IF - ELSIF - THEN Annidate
+
+DECLARE
+--Dichiariamo delle variabili esterne
+I_ValSpesa NUMBER;
+I_Bollini NUMBER;
+BEGIN
+
+I_ValSpesa := 290;
+I_Bollini := 20;
+
+IF I_ValSpesa > 500 THEN
+    
+    --Espressioni Condizionale Annidata
+    IF (I_Bollini > 50) THEN
+        dbms_output.put_line('Complimenti sei un cliente GOLD con BONUS con una spesa di: ' || I_ValSpesa || ' e una monte bollini di ' || I_Bollini);
+    ELSE
+        dbms_output.put_line('Complimenti sei un cliente GOLD con una spesa di: ' || I_ValSpesa);
+    END IF;
+--Espressione condizionale alternativa    
+ELSIF (I_ValSpesa > 300 AND I_ValSpesa < 500) OR (I_ValSpesa < 300 AND I_Bollini > 200) THEN
+    dbms_output.put_line('Complimenti sei un cliente SILVER con una spesa di: ' || I_ValSpesa);
+ELSE
+    dbms_output.put_line('Speacente NON hai raggiunto il valore di spesa minimo (300): ' || I_ValSpesa);
+END IF;
+
+EXCEPTION 
+WHEN OTHERS THEN
+    null;
+END;
+
+ 
