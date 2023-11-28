@@ -1,0 +1,51 @@
+--Esempio di variabili, inizializzazione e DML SQL
+
+DECLARE
+--Dichiariamo delle variabili 
+P_Paese CONSTANT CHAR(2) := 'IT';
+P_ValSpesa NUMBER := 0;
+P_ValBollino NUMBER := 10;
+P_Bollini SCONTRINI.BOLLINI%TYPE := 0;
+P_Nome CLIENTI.NOME%TYPE;
+P_CodFid CLIENTI.CODFIDELITY%TYPE := &Fidelity;
+P_Nominativo varchar2(110);
+P_IsFid boolean;
+P_Data CLIENTI.DATACREAZ%TYPE;
+BEGIN
+
+SELECT NOME, DATACREAZ INTO P_Nome,P_Data FROM CLIENTI
+WHERE CODFIDELITY = P_CodFid;
+
+dbms_output.put_line('la variabile P_CodFid è: ' || P_CodFid);
+dbms_output.put_line('la variabile P_Nome è: ' || P_Nome);
+dbms_output.put_line('la variabile P_Data è: ' || P_Data);
+
+SELECT NOME || ' ' || COGNOME INTO P_Nominativo FROM CLIENTI
+WHERE CODFIDELITY = P_CodFid;
+
+dbms_output.put_line('la variabile P_Nome è: ' || P_Nominativo);
+
+SELECT SUM(TOTALE) INTO P_ValSpesa
+FROM SCONTRINI WHERE CODFID = P_CodFid;
+
+dbms_output.put_line('la variabile P_ValSpesa è: ' || P_ValSpesa);
+
+P_ValSpesa := P_ValSpesa * 1.10;
+P_Bollini := (P_ValSpesa / P_ValBollino);
+
+dbms_output.put_line('la variabile P_ValSpesa è: ' || P_ValSpesa || ' BOLLINI: ' || ROUND(P_Bollini,0));
+
+INSERT INTO TOP_CLI(CODFID,MESE,NOME,COGNOME,BOLLINI)
+VALUES(P_CodFid,EXTRACT(month FROM SYSDATE),P_Nome,P_Nominativo,P_Bollini);
+
+EXCEPTION 
+WHEN OTHERS THEN
+    null;
+END;
+
+/*
+
+SELECT A.* FROM TOP_CLI A
+WHERE CODFID = '';
+
+*/
