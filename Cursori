@@ -1,0 +1,29 @@
+
+DECLARE
+    v_ValTot number := &ValTotale;
+    v_NumSpese number := &NumSpese;
+    
+    -- CREAZIONE CURSORE
+    CURSOR c_clienti(p_NumSpese IN number, p_ValTot IN number) 
+    IS
+        SELECT A.NOME || ' ' || A.COGNOME AS Nominativo, B.NUMSPESE, B.VALTOT FROM CLIENTI A JOIN
+        (SELECT CODFID, COUNT(*) AS NUMSPESE, SUM(TOTALE) AS VALTOT FROM SCONTRINI GROUP BY CODFID) B 
+        ON A.CODFIDELITY = B.CODFID 
+        WHERE B.NUMSPESE > p_NumSpese AND B.VALTOT > p_ValTot AND B.CODFID <> -1
+        ORDER BY B.VALTOT DESC;
+BEGIN
+    DBMS_OUTPUT.PUT_LINE ('Apertura Cursore con paramtri'); 
+    DBMS_OUTPUT.PUT_LINE ('Numero Spese: ' || v_NumSpese || ', Valore Totale:' || v_ValTot); 
+    
+    FOR v_clienti IN c_clienti(v_NumSpese, v_ValTot) 
+    LOOP
+       IF v_clienti.VALTOT > 400 THEN
+            DBMS_OUTPUT.PUT_LINE('Il Cliente '||v_clienti.Nominativo ||' ha fatto spese per è' || v_clienti.VALTOT || ' ed ha diritto a 10 coupon');
+        ELSIF  v_clienti.VALTOT > 300 AND v_clienti.VALTOT < 400 THEN
+            DBMS_OUTPUT.PUT_LINE('Il Cliente '||v_clienti.Nominativo ||' ha fatto spese per è' || v_clienti.VALTOT || ' ed ha diritto a 5 coupon');
+        ELSE
+            DBMS_OUTPUT.PUT_LINE('Il Cliente '||v_clienti.Nominativo ||' NON ha diritto ad alcun premio! ');
+       END IF;
+    
+    END LOOP; --Fine del ciclo LOOP  
+END; 
