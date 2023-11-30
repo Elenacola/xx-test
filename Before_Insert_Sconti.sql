@@ -1,4 +1,4 @@
---Esempio Creazione Trigger con variabile :NEW
+Creazione Trigger con variabile :NEW
 CREATE OR REPLACE TRIGGER Before_Insert_Sconti
 BEFORE INSERT ON SCONTI
     FOR EACH ROW
